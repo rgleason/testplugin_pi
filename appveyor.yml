@@ -22,7 +22,7 @@ install:
   - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin
 
   # install dependencies:
-  - choco install poedit
+  - choco install poedit  
   - choco install git
 
   - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/nsis-3.04-setup.exe
