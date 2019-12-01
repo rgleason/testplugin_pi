@@ -7,11 +7,11 @@ set -xe
 
 #STABLE_REPO='@CLOUDSMITH_USER@/@GIT_REPOSITORY_NAME@-stable'
 #UNSTABLE_REPO='@CLOUDSMITH_USER@/@GIT_REPOSITORY_NAME@'
-#STABLE_PKG_REPO='@STABLE_PKG_REPO@/manual'
+#STABLE_PKG_REPO='@CLOUDSMITH_USER@/@GIT_REPOSITORY_NAME@-pkg'
 
 STABLE_REPO='@CLOUDSMITH_USER@/opencpn-plugins-stable'
 UNSTABLE_REPO='@CLOUDSMITH_USER@/opencpn-plugins-unstable'
-STABLE_PKG_REPO='@STABLE_PKG_REPO@/opencpn-plugins-pkg'
+STABLE_PKG_REPO='@CLOUDSMITH_USER@/opencpn-plugins-pkg'
 
 if test "@APPVEYOR_TEST_DEPLOY_TO_CLOUDSMITH@" != "true"
 then
@@ -95,7 +95,7 @@ cloudsmith push raw  \
 cloudsmith push raw \
     --republish \
     --no-wait-for-sync \
-    --name @PACKAGE@-@PKG_TARGET@-@PKG_TARGET_VERSION@-metadata \
+    --name @PACKAGE@-@PKG_TARGET@-@PKG_TARGET_VERSION@-installer \
     --version ${VERSION} \
-    --summary "@PACKAGE@ .${PKG_EXT} installation package" \
-    $REPO ./$exe
+    --summary "@PACKAGE@ installation package" \
+    $PKG_REPO ./$exe
