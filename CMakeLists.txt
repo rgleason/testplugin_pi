@@ -40,7 +40,7 @@ set(LONG_DESCRIPTION "testplugin Plugin is used to test out the ODraw API and de
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "254")
-set(VERSION_TWEAK "0")
+set(VERSION_TWEAK "10")
 set(VERSION_DATE "05/09/2023") # DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 
@@ -158,12 +158,16 @@ set(HDRS
     include/tpdc.h
     include/tpShaders.h
     include/tpUtils.h)
+	
+## Is this really necessary?	
 
 set(OCPNSRC
     ocpnsrc/cutil.cpp
     ocpnsrc/TexFont.cpp
 )
 
+## Do we need this for testplugin functions?
+## a lot of it is in libs/  already
 set(OCPNHDRS
     ocpninclude/cutil.h
     ocpninclude/ocpn_plugin.h
@@ -174,14 +178,25 @@ set(OCPNHDRS
     libs/ocpn-api/ocpn_plugin.h
 )
 
+## Why do we need this ?
+
 set(EXTSRC
 )
+
+## Why do we need this?
+
 set(EXTINCLUDE
-    extinclude/ODAPI.h
-    extinclude/ODJSONSchemas.h
+    libs/ODAPI/ODAPI.h
+    libs/ODAPI/ODJSONSchemas.h
 )
 
-set(LIBSSRC libs/wxJSON/src/jsonreader.cpp libs/wxJSON/src/jsonval.cpp libs/wxJSON/src/jsonwriter.cpp)
+set(LIBSSRC 
+    libs/wxJSON/src/jsonreader.cpp 
+	libs/wxJSON/src/jsonval.cpp 
+	libs/wxJSON/src/jsonwriter.cpp
+)
+
+## Is all of this needed??
 
 set(LIBHDRS
     libs/GL/gl.h
@@ -195,7 +210,16 @@ set(LIBHDRS
 
 add_definitions(-DPLUGIN_USE_SVG)
 
-set(EXTINCLUDE_DIR ${EXTINCLUDE_DIR} extinclude libs/ocpn-api/)
+
+## This seems very convoluted, why is it necessary?
+## BTW I just threw all the json-validation stuff under  libs/json-schema-validator
+## and included nlohmann (folder) and the json...cpp and another copy of ODAPI.h and ODJASONSchemas.h to get it to work.
+## it is still pretty messy. When it builds and is used, there are some bugs in OpenCPN.
+
+set(EXTINCLUDE_DIR 
+    ${EXTINCLUDE_DIR} 
+     extinclude 
+     libs/ocpn-api/)
 
 #
 # ----- If using JSON validation in plugin section below is needed ----- ##
@@ -211,10 +235,22 @@ if(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Using JSON Schema validation - warning this changes the 'flavour' of the executable and it may not be compatible with OpenCPN")
     add_definitions(-DPI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Adding JSON Schema validation")
+	
+	## I tried to get this working and it seems to compile but there are warnings.
+	## I think this also could be a lot simpler. Maybe there is a better way...
 
-    set(EXTSRC ${EXTSRC} extsrc/json-schema-validator/json-schema-draft7.json.cpp extsrc/json-schema-validator/json-uri.cpp extsrc/json-schema-validator/json-validator.cpp)
-    set(EXTINCLUDE_DIR ${EXTINCLUDE_DIR} extinclude/nlohmann extinclude)
+    set(EXTSRC ${EXTSRC} 
+	      libs/json-schema-validator/json-schema-draft7.json.cpp 
+		  libs/json-schema-validator/json-uri.cpp 
+		  libs/json-schema-validator/json-validator.cpp
+		  )
+    set(EXTINCLUDE_DIR 
+	${EXTINCLUDE_DIR} 
+	libs/json-schema-validator/nlohmann 
+	libs/json-schema-validator)
+	
     #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/extinclude/json-schema-validator)
+	
 else(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Not using JSON Schema validation - warning invalid JSON 'may' cause unexpected crashes")
 endif(PI_JSON_SCHEMA_VALIDATOR)
@@ -226,10 +262,13 @@ endif(PI_JSON_SCHEMA_VALIDATOR)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/${EXTINCLUDE_DIR})
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ODAPI)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/GL)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ocpn-api)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON/include)
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
+
 
 #
 # ----- Change below to match project requirements for android build ----- ##
