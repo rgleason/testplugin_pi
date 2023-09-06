@@ -21,7 +21,7 @@
 #	define JSON_SCHEMA_VALIDATOR_API
 #endif
 
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 
 #ifdef NLOHMANN_JSON_VERSION_MAJOR
 #	if NLOHMANN_JSON_VERSION_MAJOR < 3 || NLOHMANN_JSON_VERSION_MINOR < 5 || NLOHMANN_JSON_VERSION_PATCH < 0

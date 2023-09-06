@@ -54,7 +54,7 @@ set(LONG_DESCRIPTION "testplugin Plugin is used to test out the ODraw API and de
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "254")
-set(VERSION_TWEAK "11")
+set(VERSION_TWEAK "12")
 set(VERSION_DATE "06/09/2023") # DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -156,7 +156,6 @@ set(HDRS
     include/tpUtils.h)
 	
 ## Is this really necessary?	
-
 set(OCPNSRC
     ocpnsrc/cutil.cpp
     ocpnsrc/TexFont.cpp
@@ -165,30 +164,22 @@ set(OCPNSRC
 ## Do we need this for testplugin functions?
 ## a lot of it is in libs/  already
 set(OCPNHDRS
-    ocpninclude/cutil.h
-    ocpninclude/ocpn_plugin.h
+    ocpninclude/cutil.h     #referenced could not find unless used include_directories
     ocpninclude/pluginmanager.h
     ocpninclude/shaders.h
-    ocpninclude/TexFont.h
+    ocpninclude/TexFont.h   #in libs/pluginDC/include
     ocpninclude/vector2D.h
-    libs/ocpn-api/ocpn_plugin.h
+#    libs/ocpn-api/ocpn_plugin.h
 )
 
-## Why do we need this ?
-
-# set(EXTSRC  )
-
-## Why do we need this?
-
-#set(EXTINCLUDE
-#    libs/ODAPI/ODAPI.h
-#    libs/ODAPI/ODJSONSchemas.h)
-
+# Does th plugin really use all these?  So many versions of JSON.
 set(LIBSSRC 
     libs/wxJSON/src/jsonreader.cpp
     libs/wxJSON/src/jsonval.cpp
     libs/wxJSON/src/jsonwriter.cpp)
 
+
+# Does th plugin really use all these?
 set(LIBHDRS
     libs/GL/gl.h
     libs/GL/gl_private.h
@@ -203,7 +194,6 @@ add_definitions(-DPLUGIN_USE_SVG)
 
 
 ## Below seems very convoluted, why is it necessary?
-
 #set(EXTINCLUDE_DIR 
 #    ${EXTINCLUDE_DIR} 
 #     extinclude 
@@ -250,14 +240,17 @@ endif(PI_JSON_SCHEMA_VALIDATOR)
 ## This add_library  can be used in conditionals below.
 ##================================================================================
 
-SET(SRC ${SRCS} ${HDRS})  
+SET(SRC ${SRCS} ${HDRS} ${OCPNHDRS} ${OCPNSRC} )  
 
 ##=============================================================
 ## Modify/configure 'Include' Directories below for the Plugin
 ##=============================================================
 
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude)
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude) #needed to find cutil.h, fails otherwise
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator) #tried to fix json-schema undefined.
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator/nlohmann) #needed to find json-schema.hpp
+
 #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpnsrc/glu/include)
 #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/${EXTINCLUDE_DIR})
 
@@ -267,6 +260,7 @@ include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/GL)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ocpn-api)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ODAPI)
 
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON)   # with json schema getting some wxjson error
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON/include)
 
 #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
@@ -275,7 +269,7 @@ include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON/include)
 
 ## Change target_sources to match your project needs.
 ##=================================================
-target_sources(${PACKAGE_NAME} PUBLIC ${SRC} ${OCPNSRC})
+target_sources(${PACKAGE_NAME} PUBLIC ${SRC} )
 ##=================================================
 
 if(NOT OCPN_FLATPAK_CONFIG)
