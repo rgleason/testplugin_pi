@@ -17,16 +17,14 @@
 ## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,                                       *
 ## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                       *
 #-----------------------------------------------------------------------------
-# Frontend2 Author: Jon Gough  TP v1.0.254.0 09/09/2023 DD/MM/YYYY format
+# Frontend2 Author: Jon Gough  TP v1.0.254.11 06/09/2023 DD/MM/YYYY format
 # buildCI:yes useODAPI:yes validateJSON:yes
 # ---------------------------------------------------------------------------
-## ----- When changing this file do NOT change the order in which sections occur        ----- ##
-## ----- Changes should only be made between the section blocks that identify where     ----- ##
-## ----- these changes should be. The whole configuration process relies on this        ----- ##
-## ----- sequence to be successful                                                      ----- ##
+## -- When changing this file do NOT change the order of the sections.    -- ##
+## -- Make changes only between the section blocks identified             -- ##
+## -- The whole configuration process relies on this sequence for success.-- ##
 ##
-
-##----- Modify section below to include all the details for your plugin ----- ##
+## -- Modify section below to include all the details for your plugin.    -- ##
 
 set(CMLOC "CMakeLists: ")
 
@@ -134,8 +132,8 @@ include("PluginConfigure")
 
 add_definitions(-DUSE_S57)
 
+## ---- Section Below - Add your project SET(SRCS and SET(HDRS  etc..
 
-## ---- Remember to Add your project SET(SRCS and SET(HDRS  etc..
 set(SRCS
     src/tpdc.cpp
     src/tpControlDialogDef.cpp
@@ -178,23 +176,18 @@ set(OCPNHDRS
 
 ## Why do we need this ?
 
-set(EXTSRC
-)
+# set(EXTSRC  )
 
 ## Why do we need this?
 
-set(EXTINCLUDE
-    libs/ODAPI/ODAPI.h
-    libs/ODAPI/ODJSONSchemas.h
-)
+#set(EXTINCLUDE
+#    libs/ODAPI/ODAPI.h
+#    libs/ODAPI/ODJSONSchemas.h)
 
 set(LIBSSRC 
-    libs/wxJSON/src/jsonreader.cpp 
-	libs/wxJSON/src/jsonval.cpp 
-	libs/wxJSON/src/jsonwriter.cpp
-)
-
-## Is all of this needed??
+    libs/wxJSON/src/jsonreader.cpp
+    libs/wxJSON/src/jsonval.cpp
+    libs/wxJSON/src/jsonwriter.cpp)
 
 set(LIBHDRS
     libs/GL/gl.h
@@ -209,16 +202,14 @@ set(LIBHDRS
 add_definitions(-DPLUGIN_USE_SVG)
 
 
-## This seems very convoluted, why is it necessary?
-## BTW I just threw all the json-validation stuff under  libs/json-schema-validator
-## and included nlohmann (folder) and the json...cpp and another copy of ODAPI.h and ODJASONSchemas.h to get it to work.
-## it is still pretty messy. When it builds and is used, there are some bugs in OpenCPN.
+## Below seems very convoluted, why is it necessary?
 
-set(EXTINCLUDE_DIR 
-    ${EXTINCLUDE_DIR} 
-     extinclude 
-     libs/ocpn-api/)
+#set(EXTINCLUDE_DIR 
+#    ${EXTINCLUDE_DIR} 
+#     extinclude 
+#     libs/ocpn-api/)
 
+## ----- Section above - Add your project SET(SRCS and SET(HDRS  etc..
 ## ----- If using JSON validation in plugin section below is needed ----- ##
 
 if(APPLE)
@@ -253,43 +244,38 @@ endif(PI_JSON_SCHEMA_VALIDATOR)
 
 ## ----- If using JSON validation in plugin section above is needed ----- ##
 
+
 ##================================================================================
-## Required to collect all the set( headers and SRCS  - Adjust as required
+## Change as required to collect all the set( headers and SRCS
 ## This add_library  can be used in conditionals below.
 ##================================================================================
 
-# SET(SRC ${SRCS} ${HDRS})  
-# not used in this plugin
+SET(SRC ${SRCS} ${HDRS})  
 
 ##=============================================================
 ## Modify/configure 'Include' Directories below for the Plugin
 ##=============================================================
 
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude)
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/${EXTINCLUDE_DIR})
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ODAPI)
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude)
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpnsrc/glu/include)
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/${EXTINCLUDE_DIR})
+
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/GL)
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/glu)   #added with plugDC
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ocpn-api)
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ODAPI)
+
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON/include)
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
+
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
 
 
-##
-## ----- Change above to match project requirements for android build ----- ##
-##
 
-if(QT_ANDROID)
-    include_directories( ${PROJECT_SOURCE_DIR}/extinclude/GLES2)
-endif(QT_ANDROID)
-
-##
-## ----- Change above to match project requirements for android build ----- ##
-##
-
+## Change target_sources to match your project needs.
 ##=================================================
-target_sources(${PACKAGE_NAME} PUBLIC ${SRCS} ${HDRS} ${OCPNSRC} ${EXTSRC} ${LIBSSRC})
+target_sources(${PACKAGE_NAME} PUBLIC ${SRC} ${OCPNSRC})
 ##=================================================
 
 if(NOT OCPN_FLATPAK_CONFIG)
@@ -297,7 +283,10 @@ if(NOT OCPN_FLATPAK_CONFIG)
     message(STATUS "${CMLOC}Adding target link libraries to ${PACKAGE_NAME}")
 
     add_subdirectory(libs/tinyxml)
+    add_subdirectory(libs/pluginDC)
+
     target_link_libraries(${PACKAGE_NAME} ocpn::tinyxml)
+    target_link_libraries(${PACKAGE_NAME} ocpn::pluginDC)
 endif(NOT OCPN_FLATPAK_CONFIG)
 
 add_definitions(-DTIXML_USE_STL)
@@ -339,12 +328,12 @@ endif(UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
 ## ----- Do not change next section - needed to configure build process ----- ##
 ##
 
+##------- Change below to match project requirements --------------
 # Needed for android builds
 if(QT_ANDROID)
     include_directories(BEFORE ${qt_android_include})
 endif(QT_ANDROID)
 
-# Needed for all builds
 ## Needed for all builds Do not change - needed to build app --- ##
 #========================================================
 include("PluginInstall")
