@@ -135,12 +135,10 @@ add_definitions(-DUSE_S57)
 ## ---- Section Below - Add your project SET(SRCS and SET(HDRS  etc..
 
 set(SRCS
-    src/tpdc.cpp
     src/tpControlDialogDef.cpp
     src/tpControlDialogImpl.cpp
     src/tpicons.cpp
     src/tpJSON.cpp
-    src/tpShaders.cpp
     src/testplugin_pi.cpp
     src/tpUtils.cpp)
 
@@ -151,53 +149,11 @@ set(HDRS
     include/tpControlDialogImpl.h
     include/tpIconCombo.h
     include/tpJSON.h
-    include/tpdc.h
-    include/tpShaders.h
     include/tpUtils.h)
 	
-## Is this really necessary?	
-set(OCPNSRC
-    ocpnsrc/cutil.cpp
-    ocpnsrc/TexFont.cpp
-)
-
-## Do we need this for testplugin functions?
-## a lot of it is in libs/  already
-set(OCPNHDRS
-    ocpninclude/cutil.h     #referenced could not find unless used include_directories
-    ocpninclude/pluginmanager.h
-    ocpninclude/shaders.h
-    ocpninclude/TexFont.h   #in libs/pluginDC/include
-    ocpninclude/vector2D.h
-#    libs/ocpn-api/ocpn_plugin.h
-)
-
-# Does th plugin really use all these?  So many versions of JSON.
-set(LIBSSRC 
-    libs/wxJSON/src/jsonreader.cpp
-    libs/wxJSON/src/jsonval.cpp
-    libs/wxJSON/src/jsonwriter.cpp)
-
-
-# Does th plugin really use all these?
-set(LIBHDRS
-    libs/GL/gl.h
-    libs/GL/gl_private.h
-    libs/GL/glext.h
-    libs/GL/glu.h
-    libs/wxJSON/include/json_defs.h
-    libs/wxJSON/include/jsonreader.h
-    libs/wxJSON/include/jsonval.h
-    libs/wxJSON/include/jsonwriter.h)
 
 add_definitions(-DPLUGIN_USE_SVG)
 
-
-## Below seems very convoluted, why is it necessary?
-#set(EXTINCLUDE_DIR 
-#    ${EXTINCLUDE_DIR} 
-#     extinclude 
-#     libs/ocpn-api/)
 
 ## ----- Section above - Add your project SET(SRCS and SET(HDRS  etc..
 ## ----- If using JSON validation in plugin section below is needed ----- ##
@@ -208,11 +164,15 @@ else(APPLE)
     option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" ON)
 endif(APPLE)
 
+set(PI_JSON_SCHEMA_VALIDATOR OFF)
+
 if(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Using JSON Schema validation - warning this changes the 'flavour' of the executable and it may not be compatible with OpenCPN")
     add_definitions(-DPI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Adding JSON Schema validation")
-	
+
+    add_subdirectory(libs/json-schema-validator)
+
 	## I tried to get this working and it seems to compile but there are warnings.
 	## I think this also could be a lot simpler. Maybe there is a better way...
 
@@ -240,32 +200,15 @@ endif(PI_JSON_SCHEMA_VALIDATOR)
 ## This add_library  can be used in conditionals below.
 ##================================================================================
 
-SET(SRC ${SRCS} ${HDRS} ${OCPNHDRS} ${OCPNSRC} )  
+SET(SRC ${SRCS} ${HDRS} )
 
 ##=============================================================
 ## Modify/configure 'Include' Directories below for the Plugin
 ##=============================================================
 
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude) #needed to find cutil.h, fails otherwise
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator) #tried to fix json-schema undefined.
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator/nlohmann) #needed to find json-schema.hpp
-
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpnsrc/glu/include)
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/${EXTINCLUDE_DIR})
-
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/)
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/GL)
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/glu)   #added with plugDC
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ocpn-api)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ODAPI)
-
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON)   # with json schema getting some wxjson error
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON/include)
-
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
-
-
 
 ## Change target_sources to match your project needs.
 ##=================================================
@@ -276,11 +219,9 @@ if(NOT OCPN_FLATPAK_CONFIG)
     # Build environment not available when flatpak is being configured so following statements will not work
     message(STATUS "${CMLOC}Adding target link libraries to ${PACKAGE_NAME}")
 
-    add_subdirectory(libs/tinyxml)
-    add_subdirectory(libs/pluginDC)
+    add_subdirectory(libs/wxJSON)
+    target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
 
-    target_link_libraries(${PACKAGE_NAME} ocpn::tinyxml)
-    target_link_libraries(${PACKAGE_NAME} ocpn::pluginDC)
 endif(NOT OCPN_FLATPAK_CONFIG)
 
 add_definitions(-DTIXML_USE_STL)
