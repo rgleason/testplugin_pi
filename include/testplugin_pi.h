@@ -120,11 +120,6 @@ std::cout << x  << std::endl ; } while (0)
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#ifdef __WXMSW__
-#include "GL/gl.h"            // local copy for Windows
-#include <GL/glu.h>
-#else
-
 #include "wxWTranslateCatalog.h"
 
 #include "ocpn_plugin.h"
