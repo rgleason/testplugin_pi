@@ -164,7 +164,7 @@ else(APPLE)
     option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" ON)
 endif(APPLE)
 
-set(PI_JSON_SCHEMA_VALIDATOR OFF)
+#set(PI_JSON_SCHEMA_VALIDATOR OFF)
 
 if(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Using JSON Schema validation - warning this changes the 'flavour' of the executable and it may not be compatible with OpenCPN")
