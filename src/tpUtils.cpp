@@ -407,7 +407,7 @@ int ArcSectorPoints( wxPoint *&points, wxCoord xc, wxCoord yc, wxCoord x1, wxCoo
 }
 
 void checkGlError(const char* op, const char* filename, int linenumber) {
-    #ifdef ANDROID
+#if 0 //def ANDROID
     bool berror = false;
 
     wxString l_ErrorTxt = "";
@@ -435,5 +435,5 @@ void checkGlError(const char* op, const char* filename, int linenumber) {
     if(berror == true)
         wxLogMessage( _("%s:%i %s(), %s\n"), filename, linenumber, op, l_ErrorTxt);
     #endif
-    #endif
+#endif
 }
