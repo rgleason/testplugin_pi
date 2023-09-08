@@ -18,10 +18,10 @@ set(SRC
     include/jsonwriter.h
 )
 
-if (NOT wxWidgets_INCLUDE_DIRS)
-    include(SimpleWxConfig)
-    SimpleWxConfig()
-endif ()
+#if (NOT wxWidgets_INCLUDE_DIRS)
+#    include(SimpleWxConfig)
+#    SimpleWxConfig()
+#endif ()
 
 # Library is used also in the plugins, so:
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
