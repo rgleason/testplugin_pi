@@ -172,20 +172,8 @@ if(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Adding JSON Schema validation")
 
     add_subdirectory(libs/json-schema-validator)
+    target_link_libraries(${PACKAGE_NAME} ocpn::json-schema-validator)
 
-	## I tried to get this working and it seems to compile but there are warnings.
-	## I think this also could be a lot simpler. Maybe there is a better way...
-
-    set(EXTSRC ${EXTSRC} 
-	      libs/json-schema-validator/json-schema-draft7.json.cpp 
-		  libs/json-schema-validator/json-uri.cpp 
-		  libs/json-schema-validator/json-validator.cpp
-		  )
-    set(EXTINCLUDE_DIR 
-	${EXTINCLUDE_DIR} 
-	libs/json-schema-validator/nlohmann 
-	libs/json-schema-validator)
-	
     #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/extinclude/json-schema-validator)
 	
 else(PI_JSON_SCHEMA_VALIDATOR)
