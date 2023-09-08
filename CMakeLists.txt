@@ -2,6 +2,7 @@
 ## Author:      Jon Gough
 ##***************************************************************************
 ## *   Copyright (C) 2010 by Sean d'Epagnier                              *
+## *   License:     GPLv3+
 ## *   This program is free software; you can redistribute it and/or modify  *
 ## *   it under the terms of the GNU General Public License as published by  *
 ## *   the Free Software Foundation; either version 2 of the License, or     *
@@ -17,7 +18,8 @@
 ## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,                                       *
 ## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                       *
 #-----------------------------------------------------------------------------
-# Frontend2 Author: Jon Gough  TP v1.0.254.11 06/09/2023 DD/MM/YYYY format
+# Frontend2 Author: Jon Gough 
+# Testplugin(TP) v1.0.254.11 06/09/2023 DD/MM/YYYY format
 # buildCI:yes useODAPI:yes validateJSON:yes
 # ---------------------------------------------------------------------------
 ## -- When changing this file do NOT change the order of the sections.    -- ##
@@ -54,8 +56,8 @@ set(LONG_DESCRIPTION "testplugin Plugin is used to test out the ODraw API and de
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "254")
-set(VERSION_TWEAK "12")
-set(VERSION_DATE "06/09/2023") # DD/MM/YYYY format
+set(VERSION_TWEAK "13")
+set(VERSION_DATE "08/09/2023") # DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 set(OCPN_API_VERSION_MAJOR "1")
 set(OCPN_API_VERSION_MINOR "16")
@@ -76,6 +78,7 @@ set(ALPHA "alpha") #Standard Repos
 #set(CLOUDSMITH_BASE_REPOSITORY "${GIT_REPOSITORY_NAME}")
 #set(CLOUDSMITH_BASE_REPOSITORY "testplugin_pi")
 set(CLOUDSMITH_BASE_REPOSITORY "testplugin")
+
 # Set the following to use OpenCPN cloudsmith repositories instead of own repositories
 set(CLOUDSMITH_USER "opencpn")
 #set(CLOUDSMITH_USER "jon-gough")
@@ -155,31 +158,25 @@ set(HDRS
     include/tpShaders.h
     include/tpUtils.h)
 	
-## Is this really necessary?	
 set(OCPNSRC
     ocpnsrc/cutil.cpp
     ocpnsrc/TexFont.cpp
 )
 
-## Do we need this for testplugin functions?
-## a lot of it is in libs/  already
 set(OCPNHDRS
     ocpninclude/cutil.h     #referenced could not find unless used include_directories
     ocpninclude/pluginmanager.h
     ocpninclude/shaders.h
-    ocpninclude/TexFont.h   #in libs/pluginDC/include
+#    ocpninclude/TexFont.h   #in libs/pluginDC/include
     ocpninclude/vector2D.h
 #    libs/ocpn-api/ocpn_plugin.h
 )
 
-# Does th plugin really use all these?  So many versions of JSON.
 set(LIBSSRC 
     libs/wxJSON/src/jsonreader.cpp
     libs/wxJSON/src/jsonval.cpp
     libs/wxJSON/src/jsonwriter.cpp)
 
-
-# Does th plugin really use all these?
 set(LIBHDRS
     libs/GL/gl.h
     libs/GL/gl_private.h
@@ -202,35 +199,39 @@ add_definitions(-DPLUGIN_USE_SVG)
 ## ----- Section above - Add your project SET(SRCS and SET(HDRS  etc..
 ## ----- If using JSON validation in plugin section below is needed ----- ##
 
-if(APPLE)
-    option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" OFF)
-else(APPLE)
-    option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" ON)
-endif(APPLE)
+####
+####     TRYING TO GET IT BUILDING WITHOUT JSON SCHEMA
+####
 
-if(PI_JSON_SCHEMA_VALIDATOR)
-    message(STATUS "${CMLOC}Using JSON Schema validation - warning this changes the 'flavour' of the executable and it may not be compatible with OpenCPN")
-    add_definitions(-DPI_JSON_SCHEMA_VALIDATOR)
-    message(STATUS "${CMLOC}Adding JSON Schema validation")
+#if(APPLE)
+#    option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" OFF)
+#else(APPLE)
+#    option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" ON)
+#endif(APPLE)
+
+#if(PI_JSON_SCHEMA_VALIDATOR)
+#    message(STATUS "${CMLOC}Using JSON Schema validation - warning this changes the 'flavour' of the executable and it may not be compatible with OpenCPN")
+#    add_definitions(-DPI_JSON_SCHEMA_VALIDATOR)
+#    message(STATUS "${CMLOC}Adding JSON Schema validation")
 	
 	## I tried to get this working and it seems to compile but there are warnings.
 	## I think this also could be a lot simpler. Maybe there is a better way...
 
-    set(EXTSRC ${EXTSRC} 
-	      libs/json-schema-validator/json-schema-draft7.json.cpp 
-		  libs/json-schema-validator/json-uri.cpp 
-		  libs/json-schema-validator/json-validator.cpp
-		  )
-    set(EXTINCLUDE_DIR 
-	${EXTINCLUDE_DIR} 
-	libs/json-schema-validator/nlohmann 
-	libs/json-schema-validator)
+#    set(EXTSRC ${EXTSRC} 
+#	      libs/json-schema-validator/json-schema-draft7.json.cpp 
+#		  libs/json-schema-validator/json-uri.cpp 
+#		  libs/json-schema-validator/json-validator.cpp
+#		  )
+#    set(EXTINCLUDE_DIR 
+#	      ${EXTINCLUDE_DIR} 
+#	      libs/json-schema-validator/nlohmann 
+#	      libs/json-schema-validator)
 	
     #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/extinclude/json-schema-validator)
 	
-else(PI_JSON_SCHEMA_VALIDATOR)
-    message(STATUS "${CMLOC}Not using JSON Schema validation - warning invalid JSON 'may' cause unexpected crashes")
-endif(PI_JSON_SCHEMA_VALIDATOR)
+#else(PI_JSON_SCHEMA_VALIDATOR)
+#    message(STATUS "${CMLOC}Not using JSON Schema validation - warning invalid JSON 'may' cause unexpected crashes")
+#endif(PI_JSON_SCHEMA_VALIDATOR)
 
 ## ----- If using JSON validation in plugin section above is needed ----- ##
 
@@ -248,7 +249,7 @@ SET(SRC ${SRCS} ${HDRS} ${OCPNHDRS} ${OCPNSRC} )
 
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpninclude) #needed to find cutil.h, fails otherwise
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator) #tried to fix json-schema undefined.
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator) #tried to fix json-schema undefined.
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator/nlohmann) #needed to find json-schema.hpp
 
 #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/ocpnsrc/glu/include)
@@ -256,14 +257,14 @@ include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/json-schema-validator/nloh
 
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/GL)
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/glu)   #added with plugDC
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/glu)      #added with plugDC
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ocpn-api)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/ODAPI)
 
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON)   # with json schema getting some wxjson error
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON)   #with json schema getting some wxjson error
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/wxJSON/include)
 
-#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
+include_directories(BEFORE ${PROJECT_SOURCE_DIR}/libs/pluginDC/include)
 
 
 
@@ -289,26 +290,26 @@ add_definitions(-DTIXML_USE_STL)
 ## ----- If using JSON validation section below is needed ----- ##
 ##
 
-if(UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
-    if(PI_JSON_SCHEMA_VALIDATOR)
-        # Change OS/ABI to be UNIX - System V to make it run with OCPN
-        set(lib_name lib${PACKAGE_NAME}.so)
-        message(STATUS "${CMLOC}lib-name: ${lib_name}")
-        find_file(elfedit elfedit)
-        if(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
-            message(STATUS "${CMLOC}Will ensure OS/ABI is set to 0 to match OCPN")
-            add_custom_command(
-                TARGET ${PACKAGE_NAME}
-                POST_BUILD
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                DEPENDS ${PACKAGE_NAME}
-                COMMENT " Running post build action on ${lib_name}."
-                COMMAND sh -c 'elfedit --input-osabi=Linux --output-osabi=none ${lib_name} || (echo 0) ')
-        else(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
-            message(STATUS "${CMLOC}Cannot correct OS/ABI to match OCPN if it is generated incorrectly. Package binutils needed")
-        endif(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
-    endif(PI_JSON_SCHEMA_VALIDATOR)
-endif(UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
+#if(UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
+#    if(PI_JSON_SCHEMA_VALIDATOR)
+#        # Change OS/ABI to be UNIX - System V to make it run with OCPN
+#        set(lib_name lib${PACKAGE_NAME}.so)
+#        message(STATUS "${CMLOC}lib-name: ${lib_name}")
+#        find_file(elfedit elfedit)
+#        if(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
+#            message(STATUS "${CMLOC}Will ensure OS/ABI is set to 0 to match OCPN")
+#            add_custom_command(
+#                TARGET ${PACKAGE_NAME}
+#                POST_BUILD
+#                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#                DEPENDS ${PACKAGE_NAME}
+#                COMMENT " Running post build action on ${lib_name}."
+#                COMMAND sh -c 'elfedit --input-osabi=Linux --output-osabi=none ${lib_name} || (echo 0) ')
+#        else(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
+#            message(STATUS "${CMLOC}Cannot correct OS/ABI to match OCPN if it is generated incorrectly. Package binutils needed")
+#        endif(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
+#    endif(PI_JSON_SCHEMA_VALIDATOR)
+#endif(UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
 
 #
 # ----- If using JSON validation in plugin section above is needed ----- ##
@@ -318,9 +319,6 @@ endif(UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
 ## ----- Change above to match project requirements ----- ##
 ##
 
-##
-## ----- Do not change next section - needed to configure build process ----- ##
-##
 
 ##------- Change below to match project requirements --------------
 # Needed for android builds
