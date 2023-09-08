@@ -164,7 +164,6 @@ else(APPLE)
     option(PI_JSON_SCHEMA_VALIDATOR "Use JSON Schema validator" ON)
 endif(APPLE)
 
-#set(PI_JSON_SCHEMA_VALIDATOR OFF)
 
 if(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Using JSON Schema validation - warning this changes the 'flavour' of the executable and it may not be compatible with OpenCPN")
@@ -174,8 +173,6 @@ if(PI_JSON_SCHEMA_VALIDATOR)
     add_subdirectory(libs/json-schema-validator)
     target_link_libraries(${PACKAGE_NAME} ocpn::json-schema-validator)
 
-    #include_directories(BEFORE ${PROJECT_SOURCE_DIR}/extinclude/json-schema-validator)
-	
 else(PI_JSON_SCHEMA_VALIDATOR)
     message(STATUS "${CMLOC}Not using JSON Schema validation - warning invalid JSON 'may' cause unexpected crashes")
 endif(PI_JSON_SCHEMA_VALIDATOR)
