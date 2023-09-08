@@ -30,8 +30,7 @@ add_library(ocpn::json-schema-validator ALIAS JSON-SCHEMA-VALIDATOR)
 
 set_property(TARGET JSON-SCHEMA-VALIDATOR PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(JSON-SCHEMA-VALIDATOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-#target_include_directories(JSON-SCHEMA-VALIDATOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-#target_include_directories(JSON-SCHEMA-VALIDATOR PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_include_directories(JSON-SCHEMA-VALIDATOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/nlohmann)
 
 
 set(CMLOC ${SAVE_CMLOC_JSONCPP})
