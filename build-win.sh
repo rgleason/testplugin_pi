@@ -40,7 +40,9 @@ cd "$BUILD_DIR"
 
 # Check if the first argument is provided
 if [ -z "$1" ]; then
-  echo "No argument supplied"
+  echo "No argument supplied."
+  echo  "Use c to build"
+  echo  "Use t to test"
   exit 1
 fi
 
