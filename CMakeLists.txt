@@ -147,6 +147,7 @@ project(${PACKAGE})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+
 ##========================================================
 
 include("PluginSetup")
@@ -334,6 +335,7 @@ include("PluginPackage")
 
 ##================================================================
 ## ----- Do not change section above - needed to configure build process --##
+
 
 message(STATUS "${CMLOC}include directories: ")
 get_property(
